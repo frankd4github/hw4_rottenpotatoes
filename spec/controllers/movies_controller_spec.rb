@@ -1,6 +1,72 @@
 require 'spec_helper'
 
 describe MoviesController do
+  describe 'show' do
+    it 'should instantiate @movie to the movie found by the find model class method with the id from the params' do
+      fake_movie = mock('Movie99')
+      Movie.stub(:find).and_return(fake_movie)
+      get 'show', {:id => '99'}
+      assigns(:movie).should == fake_movie
+    end
+  end
+
+  describe 'index' do
+    it 'should instantiate @title_header to "hilite" when user selects sorting by title' do
+      get 'index', {:sort => 'title'}
+      assigns(:title_header).should == 'hilite' && assigns(:date_header).should_not == 'hilite'
+    end
+    it 'should instantiate @date_header to "hilite" when user selects sorting by release_date' do
+      get 'index', {:sort => 'release_date'}
+      assigns(:date_header).should == 'hilite' && assigns(:title_header).should_not == 'hilite'
+    end
+    it 'should instantiate @all_ratings with the result of calling the all_ratings model class method' do
+      all_ratings = [ 'rating1','rating2', 'rating3']
+      Movie.stub(:all_ratings).and_return(all_ratings)
+      get 'index'
+      assigns(:all_ratings).should == all_ratings
+    end
+  end
+
+  describe 'new' do
+    it 'should render new template' do
+      get 'new'
+      response.should render_template('new')
+    end
+  end
+
+  describe 'create' do
+    it 'should call the movie model class method create with the movie hash in from the params' do
+      fake_movie = mock('Movie99', :title => 'title1')
+      Movie.stub(:create!).and_return(fake_movie)
+      get 'create', :movie => {:title => 'title1'}
+      assigns(:movie).should == fake_movie
+    end
+  end
+
+  describe 'edit' do
+    it 'should instantiate @movie to the movie found by the find model class method with the id from the params' do
+      fake_movie = mock('Movie99')
+      Movie.stub(:find).and_return(fake_movie)
+      get 'show', {:id => '99'}
+      assigns(:movie).should == fake_movie
+    end
+  end
+
+  describe 'update' do
+    it 'should instantiate @movie to the movie found by the find model class method with the id from the params' do
+      fake_movie = mock('Movie99')
+      Movie.stub(:find).and_return(fake_movie)
+      get 'show', {:id => '99'}
+      assigns(:movie).should == fake_movie
+    end
+    it 'should instantiate @movie to the movie found by the find model class method with the id from the params' do
+      fake_movie = mock('Movie99', :update_attributes! => nil)
+      Movie.stub(:find).and_return(fake_movie)
+      get 'show', {:id => '99'}
+      assigns(:movie).should == fake_movie
+    end
+  end
+
   describe 'finding similar movies' do
     it 'should instantiate @movie with the movie with the id from the params' do
       fake_movie = mock('Movie99', :find_similar_movies => [], :director => 'director1')
@@ -8,7 +74,7 @@ describe MoviesController do
       get 'find_similar_movies', {:id => 99}
       assigns(:movie).should == fake_movie
     end
-    it 'should call the model method that finds movies with same director and instantiate @similar_movies with the result' do
+    it 'should call the model instance method that finds movies with same director and instantiate @similar_movies with the result' do
       similar_movies = [mock('Movie99.1'), mock('Movie99.2')]
       fake_movie = mock('Movie99', :find_similar_movies => similar_movies, :director => 'director1' )
       Movie.stub(:find).and_return(fake_movie)
@@ -29,4 +95,5 @@ describe MoviesController do
       response.should redirect_to movies_path
     end
   end
+
 end
