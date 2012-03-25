@@ -47,22 +47,25 @@ describe MoviesController do
     it 'should instantiate @movie to the movie found by the find model class method with the id from the params' do
       fake_movie = mock('Movie99')
       Movie.stub(:find).and_return(fake_movie)
-      get 'show', {:id => '99'}
+      get 'edit', {:id => '99'}
       assigns(:movie).should == fake_movie
     end
   end
 
   describe 'update' do
     it 'should instantiate @movie to the movie found by the find model class method with the id from the params' do
-      fake_movie = mock('Movie99')
+      fake_movie = mock('Movie99', :title => 'The Movie 99', :update_attributes! => nil)
       Movie.stub(:find).and_return(fake_movie)
-      get 'show', {:id => '99'}
+      post 'update', {:id => '99', :movie => {:title => 'new_title'}}
       assigns(:movie).should == fake_movie
     end
+  end
+
+  describe 'destroy' do
     it 'should instantiate @movie to the movie found by the find model class method with the id from the params' do
-      fake_movie = mock('Movie99', :update_attributes! => nil)
+      fake_movie = mock('Movie99', :title => 'The Movie 99', :destroy => nil)
       Movie.stub(:find).and_return(fake_movie)
-      get 'show', {:id => '99'}
+      get 'destroy', {:id => '99'}
       assigns(:movie).should == fake_movie
     end
   end
